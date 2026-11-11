@@ -64,6 +64,17 @@ stripe listen --forward-to localhost:3000/api/stripe/webhook
 | `npm run stripe:setup` | Create the Stripe test product and price |
 | `npm run check:setup` | Verify Stripe and Supabase keys |
 
+## Deploy to Vercel
+
+1. Import this repo at [vercel.com/new](https://vercel.com/new). Next.js is detected automatically; no `vercel.json` is needed.
+2. Before the first deploy, add the environment variables from the table above. The two `NEXT_PUBLIC_…` values are baked in at build time, so they must exist before the first build. Mark `SUPABASE_SERVICE_ROLE_KEY` and `STRIPE_SECRET_KEY` as **Sensitive**. Use the name `FINNHUB_API_KEY`.
+3. Deploy, then note your URL (for example `https://marketcap-ai-demo.vercel.app`).
+4. **Supabase:** Authentication, URL Configuration. Set **Site URL** to your Vercel URL and add `https://<your-url>/**` under Redirect URLs, so email confirmation links come back to the deployed app.
+5. **Stripe (test mode):** Developers, Webhooks, add an endpoint `https://<your-url>/api/stripe/webhook` for `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated` and `customer.subscription.deleted`. Copy its signing secret into Vercel as `STRIPE_WEBHOOK_SECRET`, then redeploy (env changes apply to new deployments).
+6. Sign up on the deployed site and pay at `/billing/test` with `4242 4242 4242 4242`.
+
+Vercel's free Hobby plan is for personal, non-commercial projects. This app is sandbox-only; before taking real payments you'd need to move to a paid Vercel plan and live Stripe keys.
+
 ## Notes and limits
 
 - Finnhub's free tier allows about 60 calls a minute, so prices poll every 15 seconds, the watchlist polls every 30, and the watchlist is capped at 10 stocks. Historical candles are not on the free tier, so charts are built from live updates.
